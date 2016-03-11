@@ -17,7 +17,8 @@
            [cascading.tap Tap]
            [cascading.flow FlowDef]
            [cascalog.cascading.types ClojureFlow]
-           [cascading.flow.hadoop HadoopFlow HadoopFlowConnector]))
+           [cascading.flow.hadoop HadoopFlow]
+           [cascading.flow.hadoop2 Hadoop2MR1FlowConnector]))
 
 ;; ## Stats
 
@@ -52,7 +53,7 @@
 (s/defn compile-hadoop :- HadoopFlow
   "Compiles the supplied FlowDef into a Hadoop flow."
   [fd :- FlowDef]
-  (-> (HadoopFlowConnector.
+  (-> (Hadoop2MR1FlowConnector.
        (conf/project-merge (conf/project-conf)
                            {"cascading.flow.job.pollinginterval" 10}))
       (.connect fd)))
