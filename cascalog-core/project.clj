@@ -1,7 +1,7 @@
 (def ROOT-DIR (subs *file* 0 (- (count *file*) (count "project.clj"))))
 (def HADOOP-VERSION (-> ROOT-DIR (str "/../HADOOP-VERSION") slurp))
 (def VERSION (-> ROOT-DIR (str "/../VERSION") slurp))
-(def CC-VERSION (or (System/getenv "CASCALOG_CASCADING_VERSION") "3.0.0"))
+(def CC-VERSION (or (System/getenv "CASCALOG_CASCADING_VERSION") "3.1.0-wip-56"))
 
 (defproject cascalog/cascalog-core VERSION
   :description "Cascalog core libraries."
