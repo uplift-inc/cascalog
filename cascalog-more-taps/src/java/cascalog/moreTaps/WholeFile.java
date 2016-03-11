@@ -24,21 +24,21 @@ public class WholeFile extends
     }
 
     @Override
-    public void sourceConfInit(FlowProcess<JobConf> flowProcess,
+    public void sourceConfInit(FlowProcess<? extends JobConf> flowProcess,
         Tap<JobConf, RecordReader<Text, BytesWritable>, OutputCollector> tap,
         JobConf conf) {
         conf.setInputFormat( WholeFileInputFormat.class );
     }
 
     @Override
-    public void sinkConfInit(FlowProcess<JobConf> flowProcess,
+    public void sinkConfInit(FlowProcess<? extends JobConf> flowProcess,
         Tap<JobConf, RecordReader<Text, BytesWritable>, OutputCollector> tap,
         JobConf conf) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void sourcePrepare(FlowProcess<JobConf> flowProcess,
+    public void sourcePrepare(FlowProcess<? extends JobConf> flowProcess,
         SourceCall<Object[], RecordReader<Text, BytesWritable>> sourceCall) {
         sourceCall.setContext(new Object[2]);
 
@@ -47,7 +47,7 @@ public class WholeFile extends
     }
 
     @Override
-    public boolean source(FlowProcess<JobConf> flowProcess,
+    public boolean source(FlowProcess<? extends JobConf> flowProcess,
         SourceCall<Object[], RecordReader<Text, BytesWritable>> sourceCall) throws IOException {
 
 
@@ -64,7 +64,7 @@ public class WholeFile extends
     }
 
     @Override
-    public void sink(FlowProcess<JobConf>  flowProcess,
+    public void sink(FlowProcess<? extends JobConf>  flowProcess,
         SinkCall<Object[], OutputCollector> outputCollectorSinkCall) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
