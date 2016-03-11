@@ -1,6 +1,6 @@
 (ns cascalog.lzo.impl
   (:require [cascalog.cascading.util :as util])
-  (:import [com.twitter.elephantbird.cascading2.scheme
+  (:import [com.twitter.elephantbird.cascading3.scheme
             LzoTextLine LzoTextDelimited LzoThriftScheme
             LzoProtobufScheme]))
 
