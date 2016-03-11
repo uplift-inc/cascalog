@@ -6,13 +6,14 @@
   (:import [java.util ArrayList]
            [cascalog Util]
            [cascading.tap Tap SinkMode]
-           [cascading.tap.hadoop Hfs Lfs GlobHfs TemplateTap]
+           [cascading.tap.hadoop Hfs Lfs GlobHfs PartitionTap]
            [cascading.tuple TupleEntryCollector TupleEntryIterator]
            [cascading.scheme Scheme]
            [cascading.scheme.hadoop TextLine TextLine$Compress SequenceFile TextDelimited]
            [cascading.flow.hadoop HadoopFlowProcess]
            [cascading.tuple Fields Tuple TupleEntry]
-           [com.twitter.maple.tap StdoutTap MemorySourceTap]))
+           [com.twitter.maple.tap StdoutTap MemorySourceTap]
+           [cascading.tap.partition DelimitedPartition]))
 
 ;; source can be a cascalog-tap, subquery, or cascading tap sink can
 ;; be a cascading tap, a sink function, or a cascalog-tap
@@ -77,13 +78,23 @@ identity.  identity."
   (GlobHfs. scheme (str (path path-or-file)
                         source-pattern)))
 
-(defn template-tap
-  ([^Hfs parent sink-template]
-     (TemplateTap. parent sink-template))
+;(defn template-tap
+;  ([^Hfs parent sink-template]
+;     (TemplateTap. parent sink-template))
+;  ([^Hfs parent sink-template {:keys [templatefields open-threshold]
+;                               :or {templatefields Fields/ALL
+;                                    open-threshold 300}}]
+;     (TemplateTap. parent sink-template (fields templatefields) open-threshold)))
+
+(defn delimited-partition
+    [fields]
+    (DelimitedPartition. fields))
+
+(defn partition-tap
   ([^Hfs parent sink-template {:keys [templatefields open-threshold]
                                :or {templatefields Fields/ALL
                                     open-threshold 300}}]
-     (TemplateTap. parent sink-template (fields templatefields) open-threshold)))
+   (PartitionTap. parent (delimited-partition (fields templatefields)) open-threshold)))
 
 (defn- patternize
   "If `pattern` is truthy, returns the supplied parent `Hfs` or `Lfs`
@@ -97,7 +108,7 @@ identity.  identity."
                  (glob-hfs scheme path-or-file source-pattern)
                  parent)
         sink (if sink-template
-               (template-tap parent sink-template options)
+               (partition-tap parent sink-template options)
                parent)]
     (CascalogTap. source sink)))
 
@@ -122,8 +133,8 @@ identity.  identity."
 
   See f.ex. the
   http://docs.cascading.org/cascading/2.0/javadoc/cascading/scheme/local/TextDelimited.html
-  scheme."  
-  [^Scheme scheme path-or-file & {:keys [sinkmode sinkparts sink-template 
+  scheme."
+  [^Scheme scheme path-or-file & {:keys [sinkmode sinkparts sink-template
                                          source-pattern templatefields]
                                   :as options}]
   (-> scheme
@@ -151,7 +162,7 @@ identity.  identity."
   naming scheme."
 
   [scheme path-or-file & {:keys [sinkmode sinkparts sink-template
-                                 source-pattern templatefields] 
+                                 source-pattern templatefields]
                           :as options}]
   (-> scheme
       (set-sinkparts! sinkparts)
