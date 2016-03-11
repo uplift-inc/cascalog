@@ -11,7 +11,7 @@
   :jvm-opts ["-Xmx768m"
              "-server"
              "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n"]
-  :javac-options ["-target" "1.6" "-source" "1.6"]
+  :javac-options ["-target" "1.7" "-source" "1.7"]
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
   :jar-exclusions [#"\.java$"]
