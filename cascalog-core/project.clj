@@ -22,8 +22,8 @@
                  [log4j "1.2.16"]
                  [org.slf4j/slf4j-log4j12 "1.6.6"]
                  [cascading/cascading-hadoop2-mr1 ~CC-VERSION
-                  :exclusions [org.codehaus.janino/janino
-                               org.apache.hadoop/hadoop-core]]
+                  :exclusions [org.codehaus.janino/janino]]
+                               ;org.apache.hadoop/hadoop-core]]
                  [com.twitter/chill-hadoop "0.3.5"]
                  [com.twitter/carbonite "1.4.0"]
                  [com.twitter/maple "0.2.2"]
@@ -36,9 +36,11 @@
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
              :1.7 {:denpedencies [[org.clojure/clojure "1.7.0"]]}
-             :provided {:dependencies [[org.apache.hadoop/hadoop-core ~HADOOP-VERSION]]}
+             :provided {:dependencies [[org.apache.hadoop/hadoop-mapreduce-client-core ~HADOOP-VERSION]
+                                       [org.apache.hadoop/hadoop-common ~HADOOP-VERSION]
+                                       [org.apache.hadoop/hadoop-mapreduce-client-shuffle ~HADOOP-VERSION]]}
              :dev {:resource-paths ["dev"]
-                   :plugins [[lein-midje "3.1.3"]]
+                   :plugins [[lein-midje "3.2"]]
                    :injections [(require 'schema.core)
                                 (schema.core/set-fn-validation! true)]
                    :dependencies
