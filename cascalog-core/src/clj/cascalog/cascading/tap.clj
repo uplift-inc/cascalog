@@ -11,7 +11,7 @@
            [cascading.scheme Scheme]
            [cascading.scheme.hadoop TextLine TextLine$Compress SequenceFile TextDelimited]
            [cascading.flow.hadoop HadoopFlowProcess]
-           [cascading.tuple Fields Tuple TupleEntry]
+           [cascading.tuple Fields Tuple]
            [com.twitter.maple.tap StdoutTap MemorySourceTap]
            [cascading.tap.partition DelimitedPartition]))
 
@@ -91,9 +91,8 @@ identity.  identity."
     (DelimitedPartition. fields))
 
 (defn partition-tap
-  ([^Hfs parent sink-template {:keys [templatefields open-threshold]
-                               :or {templatefields Fields/ALL
-                                    open-threshold 300}}]
+  ([^Hfs parent templatefields {:keys [open-threshold]
+                                :or {open-threshold 300}}]
    (PartitionTap. parent (delimited-partition (fields templatefields)) open-threshold)))
 
 (defn- patternize
@@ -101,14 +100,14 @@ identity.  identity."
   tap wrapped that responds as a `TemplateTap` when used as a sink,
   and a `GlobHfs` tap when used as a source. Otherwise, acts as
   identity."
-  [scheme type path-or-file sinkmode sink-template source-pattern options]
+  [scheme type path-or-file sinkmode sink-template source-pattern templatefields options]
   (let [tap-maker ({:hfs hfs :lfs lfs} type)
         parent (tap-maker scheme path-or-file sinkmode)
         source (if source-pattern
                  (glob-hfs scheme path-or-file source-pattern)
                  parent)
         sink (if sink-template
-               (partition-tap parent sink-template options)
+               (partition-tap parent templatefields options)
                parent)]
     (CascalogTap. source sink)))
 
@@ -140,7 +139,7 @@ identity.  identity."
   (-> scheme
       (set-sinkparts! sinkparts)
       (patternize :hfs path-or-file sinkmode
-                  sink-template source-pattern options)))
+                  sink-template source-pattern templatefields options)))
 
 (defn lfs-tap
   "Returns a Cascading Lfs tap with support for the supplied scheme,
@@ -167,7 +166,7 @@ identity.  identity."
   (-> scheme
       (set-sinkparts! sinkparts)
       (patternize :lfs path-or-file sinkmode
-                  sink-template source-pattern options)))
+                  sink-template source-pattern templatefields options)))
 
 (defn hfs-textline
   "Creates a tap on HDFS using textline format. Different filesystems

@@ -10,7 +10,7 @@
   (:import [cascading.scheme.hadoop TextLine$Compress]
            [cascading.tuple Fields]
            [cascading.tap Tap]
-           [cascading.tap.hadoop Hfs Lfs GlobHfs TemplateTap]))
+           [cascading.tap.hadoop Hfs Lfs GlobHfs PartitionTap]))
 
 (background
  (before :facts
@@ -33,7 +33,7 @@
   (fn [& opts]
     (extracter
      (apply tap-func
-            (tap/text-line ["line"] Fields/ALL)
+            (tap/text-line ["line"] ["line"])
             "/path/"
             opts))))
 
@@ -72,7 +72,7 @@
     (fact "Type testing on the various taps."
       ?tap => (fn [x] (instance? ?type x)))
     ?type        ?tap
-    TemplateTap (hfs-test-sink :sink-template "%s/")
+    PartitionTap (hfs-test-sink :sink-template "%s/" :templatefields ["?test"])
     GlobHfs     (hfs-test-source :source-pattern "%s/")
     Hfs         (hfs-test-sink :source-pattern "%s/")
     Hfs         (hfs-test-source)
@@ -100,11 +100,14 @@
 (deftest sink-template-test
   (fact
     ":sink-template option should set path template on cascading tap."
-    (.getPathTemplate (hfs-test-sink :sink-template "%s/")) => "%s/")
-  (fact 
+    (.toString
+      (.getPartitionFields
+        (.getPartition
+          (hfs-test-sink :sink-template "%s/" :templatefields ["?test"])))) => "'?test'")
+  (fact
    ":open-threshold should set open taps threshold"
-   (.getOpenTapsThreshold 
-    (hfs-test-sink :sink-template "%s/" :open-threshold 10)) => 10))
+   (.getOpenWritesThreshold
+     (hfs-test-sink :sink-template "%s/" :templatefields ["?test"] :open-threshold 10)) => 10))
 
 (deftest template-tap-test
   (fact
@@ -115,6 +118,7 @@
         (let [tuples [[1 2] [2 3] [4 5]]
               temp-tap (tap/hfs-seqfile (str tmp "/")
                                         :sink-template "%s/"
+                                        :templatefields ["?a" "?b"]
                                         :source-pattern "{1,2}/*")]
           temp-tap
           (?<- temp-tap [?a ?b] (tuples ?a ?b))
@@ -127,13 +131,13 @@
            child-taps (iterator-seq (.getChildTaps (tap-source glob-tap)))]
        (map #(-> (.getPath %) (.getName)) child-taps)) => ?files)
        ?pattern   ?files
-       "/*"        ["clj" "java"]
-       "/**"       ["clj" "java"]
-       "/*/"       ["clj" "java"]
-       "/../src/*" ["clj" "java"]
-       "*/*"       ["clj" "java"]
+       "/*"        ["java" "clj"]
+       "/**"       ["java" "clj"]
+       "/*/"       ["java" "clj"]
+       "/../src/*" ["java" "clj"]
+       "*/*"       ["java" "clj"]
        "/clj"      ["clj"]
-       "/*/*"      ["cascalog" "cascading" "cascalog" "jcascalog"]
+       "/*/*"      ["cascading" "cascalog" "jcascalog" "cascalog"]
        "/."        ["src"]
        "*"         ["src"]
        "/"         ["src"]))

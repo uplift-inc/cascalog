@@ -7,8 +7,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories {"conjars.org" "http://conjars.org/repo" "twttr.com" "http://maven.twttr.com/"}
-  :dependencies [[com.twitter.elephantbird/elephant-bird-cascading3 "4.13"
-                  :exclusions [cascading/cascading-hadoop]]
+  :dependencies [[com.twitter.elephantbird/elephant-bird-cascading3 "4.13"]
                  [com.hadoop.gplcompression/hadoop-lzo "0.4.19"]]
   :profiles {:1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
