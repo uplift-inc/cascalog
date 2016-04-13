@@ -20,7 +20,3 @@ script:
         - ${BWD}/travis_fix_proj.py project.clj
         - LEIN_SNAPSHOTS_IN_RELEASE=yup lein uberjar                
         - cd ${BWD}
-
-notifications:
-        email: 
-             - pareddy@uplift.com
