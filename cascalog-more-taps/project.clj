@@ -17,7 +17,9 @@
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
              :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :provided {:dependencies [[cascalog/cascalog-core ~VERSION]
-                                       [org.apache.hadoop/hadoop-core ~HADOOP-VERSION]]}
+                                       [org.apache.hadoop/hadoop-mapreduce-client-core ~HADOOP-VERSION]
+                                       [org.apache.hadoop/hadoop-common ~HADOOP-VERSION]
+                                       [org.apache.hadoop/hadoop-mapreduce-client-shuffle ~HADOOP-VERSION]]}
              :dev {:plugins [[lein-midje "3.1.3"]]
                    :dependencies
                    [[cascalog/midje-cascalog ~VERSION]
